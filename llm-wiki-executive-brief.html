@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM-Wiki Executive Brief</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #182033;
+      --muted: #5d6678;
+      --line: #dfe5ef;
+      --accent: #2457d6;
+      --accent-soft: #e8efff;
+      --green: #0f7a46;
+      --green-soft: #e9f7ef;
+      --amber: #a05a00;
+      --amber-soft: #fff3df;
+      --red: #b3261e;
+      --red-soft: #ffebea;
+      --ink-soft: #eef1f6;
+      --shadow: 0 14px 34px rgba(21, 32, 57, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(36, 87, 214, 0.14), transparent 34rem),
+        radial-gradient(circle at top right, rgba(15, 122, 70, 0.10), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 36px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(223, 229, 239, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -90px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: rgba(36, 87, 214, 0.08);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: clamp(15px, 1.6vw, 18px);
+    }
+
+    .one-line {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 15px;
+      background: #111827;
+      color: #fff;
+      font-size: clamp(16px, 2vw, 21px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .one-line span {
+      color: #bcd0ff;
+    }
+
+    .hero-side {
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+      align-content: center;
+    }
+
+    .metric {
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--ink-soft);
+      border: 1px solid var(--line);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      margin-bottom: 7px;
+    }
+
+    .metric small {
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .metric.blue {
+      background: var(--accent-soft);
+      border-color: #cad8ff;
+    }
+
+    .metric.green {
+      background: var(--green-soft);
+      border-color: #c9ead7;
+    }
+
+    .metric.amber {
+      background: var(--amber-soft);
+      border-color: #ffe1b4;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .span-4 {
+      grid-column: span 4;
+    }
+
+    .span-5 {
+      grid-column: span 5;
+    }
+
+    .span-7 {
+      grid-column: span 7;
+    }
+
+    .span-12 {
+      grid-column: span 12;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge.risk {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .badge.ops {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    p {
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .why-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .why-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 13px;
+      background: #f8fafd;
+      border: 1px solid var(--line);
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .why-item b {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .why-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .architecture {
+      display: grid;
+      gap: 10px;
+    }
+
+    .layer {
+      position: relative;
+      padding: 15px 16px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+    }
+
+    .layer:not(:last-child)::after {
+      content: "↓";
+      position: absolute;
+      left: 50%;
+      bottom: -18px;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-weight: 900;
+      background: var(--panel);
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      z-index: 2;
+    }
+
+    .layer h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .layer p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .layer.raw {
+      border-left: 6px solid #5d6678;
+    }
+
+    .layer.wiki {
+      border-left: 6px solid var(--accent);
+    }
+
+    .layer.rag {
+      border-left: 6px solid var(--green);
+    }
+
+    .layer.graph {
+      border-left: 6px solid var(--amber);
+    }
+
+    .effect-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .effect {
+      padding: 15px;
+      border-radius: 15px;
+      background: #f8fafd;
+      border: 1px solid var(--line);
+    }
+
+    .effect .kpi {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+    }
+
+    .effect b {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .effect span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .comparison {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .comparison th,
+    .comparison td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison th {
+      background: #eef3ff;
+      color: #1d2b4f;
+      font-size: 13px;
+    }
+
+    .comparison tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .comparison td:first-child {
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .risk-table th,
+    .risk-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .risk-table th {
+      color: #1d2b4f;
+      background: #f4f7fc;
+      font-size: 13px;
+    }
+
+    .risk-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .risk-level {
+      display: inline-flex;
+      min-width: 58px;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .risk-high {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .risk-med {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .risk-low {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .callout {
+      padding: 15px 16px;
+      border-radius: 15px;
+      background: var(--amber-soft);
+      border: 1px solid #ffe1b4;
+      color: #4d3007;
+      margin-top: 14px;
+    }
+
+    .callout b {
+      color: var(--amber);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      counter-reset: action;
+    }
+
+    .action {
+      position: relative;
+      padding: 16px;
+      border-radius: 15px;
+      background: #f8fafd;
+      border: 1px solid var(--line);
+    }
+
+    .action::before {
+      counter-increment: action;
+      content: counter(action);
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--text);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .action b {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .action span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .span-4,
+      .span-5,
+      .span-7 {
+        grid-column: span 12;
+      }
+
+      .effect-grid,
+      .actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin: 10px auto 24px;
+      }
+
+      .hero-main,
+      .hero-side,
+      .card {
+        border-radius: 16px;
+        padding: 16px;
+      }
+
+      .one-line {
+        padding: 14px;
+      }
+
+      .grid {
+        gap: 12px;
+      }
+
+      .effect-grid,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .comparison,
+      .risk-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .comparison td,
+      .comparison th,
+      .risk-table td,
+      .risk-table th {
+        white-space: normal;
+        min-width: 130px;
+      }
+
+      .metric strong {
+        font-size: 23px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        width: 100%;
+        margin: 0;
+      }
+
+      .hero-main,
+      .hero-side,
+      .card {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-label="요약">
+      <div class="hero-main">
+        <div class="eyebrow">Executive Brief · LLM-Wiki</div>
+        <h1>LLM-Wiki는 RAG와 온톨로지 사이의 지식 축적 계층입니다</h1>
+        <p class="lead">
+          원본 문서를 매번 검색해 답변만 생성하는 방식에서 벗어나, LLM이 핵심 지식을 마크다운 위키로 정리하고 갱신하며 재사용 가능한 조직 지식으로 축적하는 운영 패턴입니다.
+        </p>
+        <div class="one-line">
+          <span>한 줄 요약</span> · RAG는 “찾는 기술”, LLM-Wiki는 “쌓는 기술”, 온톨로지는 “정의하고 검증하는 기술”입니다.
+        </div>
+      </div>
+
+      <aside class="hero-side" aria-label="핵심 수치">
+        <div class="metric blue">
+          <strong>3계층</strong>
+          <small>원본 문서 → LLM-Wiki → RAG/Graph/온톨로지</small>
+        </div>
+        <div class="metric green">
+          <strong>100%</strong>
+          <small>위키 핵심 주장에는 원본 출처 연결을 운영 기준으로 설정</small>
+        </div>
+        <div class="metric amber">
+          <strong>월 1회</strong>
+          <small>모순·출처 누락·오래된 주장에 대한 정기 Lint 권장</small>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="card span-5">
+        <div class="section-title">
+          <h2>왜 중요한가</h2>
+          <span class="badge">Business Relevance</span>
+        </div>
+        <p>
+          기존 RAG는 질문 시점에 관련 문서 조각을 찾아 답변합니다. 하지만 답변 결과와 판단 맥락이 조직 자산으로 남지 않는 경우가 많습니다.
+        </p>
+        <div class="why-list">
+          <div class="why-item">
+            <div class="num">1</div>
+            <div>
+              <b>반복 질문 비용 감소</b>
+              <span>같은 배경 설명을 매번 새로 조립하지 않고, 정리된 위키 페이지를 재사용합니다.</span>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="num">2</div>
+            <div>
+              <b>조직 지식의 가시화</b>
+              <span>회의록, 문서, 이슈, 정책을 사람이 읽을 수 있는 지식 구조로 전환합니다.</span>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="num">3</div>
+            <div>
+              <b>온톨로지 전 단계로 활용</b>
+              <span>반복 등장하는 엔티티·관계·규칙을 식별해 지식그래프나 온톨로지로 승격할 수 있습니다.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card span-7">
+        <div class="section-title">
+          <h2>시스템 구조</h2>
+          <span class="badge ops">Recommended Architecture</span>
+        </div>
+        <div class="architecture">
+          <div class="layer raw">
+            <h3>1. Raw Sources</h3>
+            <p>문서, 회의록, 티켓, PR, 정책, 논문 등 변경하지 않는 원본 저장소입니다.</p>
+          </div>
+          <div class="layer wiki">
+            <h3>2. LLM-Wiki</h3>
+            <p>LLM이 요약, 개념, 엔티티, 의사결정, 비교표, 모순 목록을 마크다운 페이지로 유지합니다.</p>
+          </div>
+          <div class="layer rag">
+            <h3>3. Retrieval Layer</h3>
+            <p>질문 시점에는 원본 문서와 위키 페이지를 함께 검색해 답변 품질과 재현성을 높입니다.</p>
+          </div>
+          <div class="layer graph">
+            <h3>4. Graph / Ontology 승격</h3>
+            <p>중요하고 안정적인 관계는 지식그래프, 스키마, 규칙, 온톨로지로 엄밀하게 관리합니다.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card span-12">
+        <div class="section-title">
+          <h2>기대 효과</h2>
+          <span class="badge">Expected Impact</span>
+        </div>
+        <div class="effect-grid">
+          <div class="effect">
+            <span class="kpi">재사용</span>
+            <b>답변이 자산으로 남음</b>
+            <span>중요 질의 결과를 위키에 저장해 다음 분석의 출발점으로 사용합니다.</span>
+          </div>
+          <div class="effect">
+            <span class="kpi">맥락</span>
+            <b>문서 간 연결 강화</b>
+            <span>개념, 제품, 장애, 의사결정이 링크로 연결되어 팀 간 이해 비용을 낮춥니다.</span>
+          </div>
+          <div class="effect">
+            <span class="kpi">통제</span>
+            <b>출처와 변경 이력 관리</b>
+            <span>Git, 리뷰, Lint 규칙을 붙이면 지식 변경을 추적하고 감사할 수 있습니다.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card span-5">
+        <div class="section-title">
+          <h2>RAG·LLM-Wiki·온톨로지 비교</h2>
+          <span class="badge">Positioning</span>
+        </div>
+        <table class="comparison" aria-label="RAG LLM-Wiki 온톨로지 비교">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>핵심 역할</th>
+              <th>적합한 상황</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>RAG</td>
+              <td>검색 후 답변</td>
+              <td>문서가 많고 최신 검색이 중요할 때</td>
+            </tr>
+            <tr>
+              <td>LLM-Wiki</td>
+              <td>지식 정리·축적</td>
+              <td>장기 프로젝트, 리서치, 도메인 지식 관리</td>
+            </tr>
+            <tr>
+              <td>온톨로지</td>
+              <td>관계 정의·검증</td>
+              <td>규칙, 추론, 일관성 검사가 중요할 때</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          <b>판단 기준:</b> LLM-Wiki는 RAG의 대체재가 아니라, RAG가 검색할 수 있는 “정리된 지식 계층”으로 보는 것이 안전합니다.
+        </div>
+      </article>
+
+      <article class="card span-7">
+        <div class="section-title">
+          <h2>리스크와 대응</h2>
+          <span class="badge risk">Risk Control</span>
+        </div>
+        <table class="risk-table" aria-label="LLM-Wiki 리스크와 대응">
+          <thead>
+            <tr>
+              <th>리스크</th>
+              <th>수준</th>
+              <th>영향</th>
+              <th>대응</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>요약 오류</td>
+              <td><span class="risk-level risk-high">높음</span></td>
+              <td>잘못된 지식이 반복 재사용될 수 있음</td>
+              <td>핵심 주장별 출처 링크, 중요 페이지 사람 리뷰</td>
+            </tr>
+            <tr>
+              <td>오래된 주장</td>
+              <td><span class="risk-level risk-med">중간</span></td>
+              <td>정책·제품·기술 변경이 반영되지 않을 수 있음</td>
+              <td>날짜 태깅, 월 1회 Lint, 변경 감지</td>
+            </tr>
+            <tr>
+              <td>권한·보안</td>
+              <td><span class="risk-level risk-high">높음</span></td>
+              <td>민감 정보가 위키에 재노출될 수 있음</td>
+              <td>원본 권한 상속, 민감정보 마스킹, 접근 로그</td>
+            </tr>
+            <tr>
+              <td>운영 복잡도</td>
+              <td><span class="risk-level risk-med">중간</span></td>
+              <td>페이지 증가 시 검색·정합성 관리 부담 증가</td>
+              <td>스키마 파일, 폴더 규칙, 자동 Lint, Git 버전관리</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="card span-12">
+        <div class="section-title">
+          <h2>다음 액션</h2>
+          <span class="badge ops">30-Day Pilot</span>
+        </div>
+        <div class="actions">
+          <div class="action">
+            <b>파일럿 범위 선정</b>
+            <span>장기 맥락이 중요한 한 개 프로젝트나 제품 도메인으로 제한합니다.</span>
+          </div>
+          <div class="action">
+            <b>원본·위키 분리</b>
+            <span>raw는 수정 금지, wiki는 LLM 작성·사람 리뷰·Git 관리 대상으로 둡니다.</span>
+          </div>
+          <div class="action">
+            <b>운영 규칙 작성</b>
+            <span>출처 표기, 불확실성 표현, 충돌 기록, 민감정보 처리 기준을 명시합니다.</span>
+          </div>
+          <div class="action">
+            <b>성과 기준 합의</b>
+            <span>반복 질문 감소, 문서 탐색 시간, 출처 커버리지, 오류 정정 건수를 봅니다.</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">
+      Prepared as a self-contained HTML brief · No external CDN · Responsive layout
+    </div>
+  </main>
+</body>
+</html>
